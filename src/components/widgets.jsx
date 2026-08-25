@@ -5,7 +5,7 @@ import { Send, Bot, Heart, Minimize2, Sparkles, MapPin, CheckCircle2, Circle, Pa
 import { formatTime } from './core';
 import { GEMINI_API_KEY } from '../config';
 
-// Chat Widget - Two separate chats: AI and Hubby
+// Chat Widget - Two separate chats: AI assistant and direct messages
 export const ChatWidget = ({ device, context, nodes, dmMessages, onSendMessage }) => {
     const [openChat, setOpenChat] = useState(null); // null, 'ai', or 'hubby'
     const [input, setInput] = useState('');
@@ -13,7 +13,7 @@ export const ChatWidget = ({ device, context, nodes, dmMessages, onSendMessage }
     const [isTyping, setIsTyping] = useState(false);
     const [lastSeenCount, setLastSeenCount] = useState(0);
 
-    // Count unread messages from hubby (sender === 'me' means from admin/hubby side)
+    // Count unread messages (sender === 'me' means from the admin side)
     const unreadCount = dmMessages ? dmMessages.filter(m => m.sender === 'me').length - lastSeenCount : 0;
     const hasUnread = unreadCount > 0;
 
@@ -31,9 +31,9 @@ Your master (the one being monitored) is currently:
 - Current Context: ${context || 'No specific context provided'}
 
 Your Role:
-- You are a polite, warm, and helpful butler for the PARTNER (the user chatting with you).
-- You can answer questions about what he is doing based on the status above.
-- You MUST also be a general assistant for HER. She might ask for recipes, jokes, advice, or ideas.
+- You are a polite, warm, and helpful assistant for whoever is viewing this dashboard.
+- You can answer questions about the master's current status based on the info above.
+- You are also a general-purpose assistant: happy to help with ideas, drafts, quick lookups, or casual questions.
 - Always be courteous, supportive, and slightly formal but warm.
 - Keep answers concise (under 80 words) unless asked for more.
                 `;
@@ -58,7 +58,7 @@ Your Role:
             }
         }
 
-        return "Setup Error: API Key not found in config.js";
+        return "This public build runs in demo mode, so there is no live AI backend connected -- this is where Alfred would answer using real context about what is being worked on.";
     };
 
     const handleSend = async () => {
@@ -100,7 +100,7 @@ Your Role:
                 <Sparkles size={20} /><span>AI Assistant</span>
             </motion.button>
             <motion.button className="chat-fab hubby-fab" onClick={openHubbyChat} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Heart size={20} /><span>Hubby</span>
+                <Heart size={20} /><span>Messages</span>
                 {hasUnread && <span className="notif-dot" />}
             </motion.button>
         </div>
@@ -110,7 +110,7 @@ Your Role:
         <motion.div className="chat-widget" initial={{ opacity: 0, y: 50, scale: 0.9 }} animate={{ opacity: 1, y: 0, scale: 1 }}>
             <div className="chat-header">
                 <div className="chat-title">
-                    {openChat === 'ai' ? <><Sparkles size={16} /> AI Assistant</> : <><Heart size={16} /> Hubby</>}
+                    {openChat === 'ai' ? <><Sparkles size={16} /> AI Assistant</> : <><Heart size={16} /> Messages</>}
                 </div>
                 <button className="btn btn-ghost btn-icon" onClick={() => setOpenChat(null)}><Minimize2 size={18} /></button>
             </div>

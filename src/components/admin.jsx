@@ -318,7 +318,7 @@ export const AdminChat = ({ messages, onSendMessage }) => {
 
     return (
         <div className="admin-chat-section">
-            <h4 className="section-title"><Heart size={14} style={{ color: '#f43f5e' }} /> Partner Chat</h4>
+            <h4 className="section-title"><Heart size={14} style={{ color: '#f43f5e' }} /> Message Log</h4>
             <div className="admin-chat-messages">
                 {messages.length === 0 && <div className="chat-empty">No messages yet</div>}
                 {messages.map((msg, i) => (

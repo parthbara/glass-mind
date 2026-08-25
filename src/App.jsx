@@ -7,6 +7,8 @@ import { MindMapCanvas, AdminSidebar } from './components/admin';
 import './App.css';
 
 const APP_PASSWORD = import.meta.env.VITE_APP_PASSWORD || '';
+// Demo builds (no Firebase env vars set) run fully client-side -- no network calls, nothing to sync.
+const DEMO_MODE = !import.meta.env.VITE_FIREBASE_API_KEY;
 
 
 
@@ -119,8 +121,20 @@ function AppContent() {
     document.body.classList.toggle('dark', darkMode);
   }, [darkMode]);
 
-  // Sync devices and nodes from Firebase
+  // Demo mode: simulate light activity locally so the dashboard feels alive, with zero network calls.
   useEffect(() => {
+    if (!DEMO_MODE) return;
+    const tick = setInterval(() => {
+      setDevices(prev => prev.map(d => d.id === 'desktop-main'
+        ? { ...d, lastSeen: new Date(), cpu: Math.max(15, Math.min(85, d.cpu + (Math.random() * 10 - 5))), memory: Math.max(30, Math.min(90, d.memory + (Math.random() * 6 - 3))) }
+        : d));
+    }, 4000);
+    return () => clearInterval(tick);
+  }, []);
+
+  // Sync devices and nodes from Firebase (skipped entirely in demo mode)
+  useEffect(() => {
+    if (DEMO_MODE) return;
     import('./firebase').then(({ syncDevices, syncNodes, saveNodes, syncMessages }) => {
       try {
         // Devices Sync
@@ -163,6 +177,7 @@ function AppContent() {
 
   // Auto-save nodes to Firebase whenever they change locally (Debounced to prevent jitter)
   useEffect(() => {
+    if (DEMO_MODE) return; // demo builds don't persist anywhere
     if (nodes !== INITIAL_NODES) {
       const handler = setTimeout(() => {
         import('./firebase').then(({ saveNodes }) => {
@@ -175,6 +190,11 @@ function AppContent() {
   }, [nodes]);
 
   const handleSendMessage = (msg) => {
+    if (DEMO_MODE) {
+      // Demo builds keep chat local to your session -- nothing is sent anywhere.
+      setDmMessages(prev => [...prev, msg]);
+      return;
+    }
     import('./firebase').then(({ sendMessage }) => {
       sendMessage(msg);
     });
@@ -215,11 +235,16 @@ function AppContent() {
   return (
     <div className="app">
       <div className="ambient-glow" />
+      {DEMO_MODE && (
+        <div style={{ background: '#6366f1', color: '#fff', textAlign: 'center', fontSize: '12.5px', padding: '7px 12px', fontFamily: 'monospace', letterSpacing: '.02em' }}>
+          DEMO BUILD -- simulated data, no live backend, no personal data connected. Chat runs in local-only demo mode.
+        </div>
+      )}
       <header className="app-header">
         <div className="header-brand"><div className="brand-icon"><BrainCircuit size={20} /></div><span className="brand-name">Glass Mind</span></div>
         <div className="header-tabs">
           <button className={`header-tab ${viewMode === 'admin' ? 'active' : ''}`} onClick={() => setViewMode('admin')}><Eye size={16} />My Brain</button>
-          <button className={`header-tab ${viewMode === 'partner' ? 'active' : ''}`} onClick={() => setViewMode('partner')}><Heart size={16} />Partner View</button>
+          <button className={`header-tab ${viewMode === 'partner' ? 'active' : ''}`} onClick={() => setViewMode('partner')}><Heart size={16} />Public View</button>
         </div>
         <button className="dark-toggle" onClick={() => setDarkMode(!darkMode)} title={darkMode ? 'Light mode' : 'Dark mode'}>
           {darkMode ? <Sun size={18} /> : <Moon size={18} />}
