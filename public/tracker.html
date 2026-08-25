@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glass Mind Tracker</title>
+    <style>
+        body {
+            background: #0f172a;
+            color: #fff;
+            font-family: system-ui, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .card {
+            background: #1e293b;
+            padding: 2rem;
+            border-radius: 1rem;
+            text-align: center;
+            max-width: 90%;
+        }
+
+        h1 {
+            margin: 0 0 1rem;
+            font-size: 1.5rem;
+        }
+
+        p {
+            color: #94a3b8;
+            margin-bottom: 2rem;
+        }
+
+        .status {
+            font-weight: bold;
+            color: #10b981;
+        }
+
+        .error {
+            color: #ef4444;
+        }
+
+        button {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <h1>📱 Glass Mind Tracker</h1>
+        <p>Keep this tab open to sync location & battery.</p>
+        <div id="status">Ready to track...</div>
+        <br>
+        <button onclick="startTracking()">Start Tracking</button>
+    </div>
+
+    <script type="module">
+        // Firebase Config (Public keys are safe for client-side apps)
+        const URL = "https://YOUR-PROJECT-default-rtdb.firebaseio.com/devices/phone-android.json";
+
+        // Tracking Logic
+        async function updateStatus() {
+            const statusEl = document.getElementById('status');
+            try {
+                // 1. Battery
+                let batteryLevel = 100;
+                let isCharging = false;
+                if (navigator.getBattery) {
+                    const battery = await navigator.getBattery();
+                    batteryLevel = Math.round(battery.level * 100);
+                    isCharging = battery.charging;
+                }
+
+                // 2. Location
+                navigator.geolocation.getCurrentPosition(async (pos) => {
+                    const { latitude, longitude } = pos.coords;
+
+                    // 3. Send to Firebase
+                    const data = {
+                        battery: batteryLevel,
+                        isCharging: isCharging,
+                        location: { lat: latitude, lng: longitude },
+                        lastSeen: new Date().toISOString(),
+                        online: true,
+                        type: 'phone',
+                        name: 'My Phone'
+                    };
+
+                    await fetch(URL, {
+                        method: 'PATCH',
+                        body: JSON.stringify(data)
+                    });
+
+                    statusEl.innerText = `Last update: ${new Date().toLocaleTimeString()}\n🔋 ${batteryLevel}%`;
+                    statusEl.className = "status";
+
+                }, (err) => {
+                    statusEl.innerText = "Error: Allow location access!";
+                    statusEl.className = "error";
+                });
+
+            } catch (e) {
+                console.error(e);
+                statusEl.innerText = "Error syncing: " + e.message;
+            }
+        }
+
+        window.startTracking = () => {
+            // Request permissions explicitly
+            if (!navigator.geolocation) return alert("Geolocation not supported");
+            updateStatus();
+            setInterval(updateStatus, 60000); // Every minute
+            document.querySelector('button').style.display = 'none';
+        };
+    </script>
+</body>
+
+</html>

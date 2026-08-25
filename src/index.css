@@ -1,0 +1,163 @@
+/* Glass Mind - Minimal Fast UI */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg: #eef1f5;
+  --surface: #ffffff;
+  --border: #c9d1dc;
+  --text: #1e293b;
+  --text-muted: #64748b;
+  --primary: #6366f1;
+  --primary-light: #e0e7ff;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #f43f5e;
+  --radius: 10px;
+}
+
+/* Dark Mode */
+body.dark {
+  --bg: #0f172a;
+  --surface: #1e293b;
+  --border: #475569;
+  --text: #f1f5f9;
+  --text-muted: #94a3b8;
+  --primary: #818cf8;
+  --primary-light: #312e81;
+}
+
+/* Dark mode specific overrides for nodes */
+body.dark .mindmap-node {
+  background: #293548;
+  border-color: #475569;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+body.dark .mindmap-node:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+body.dark .mindmap-node.selected {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px var(--primary), 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+body.dark .mindmap-node .node-label-input {
+  color: #1e293b;
+}
+
+body.dark .mindmap-node .node-translated-input {
+  color: #475569;
+}
+
+body.dark .mindmap-node .node-type-badge {
+  background: rgba(0, 0, 0, 0.06);
+  color: #64748b;
+}
+
+html {
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  font-family: 'Inter', -apple-system, system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* Utilities */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.1s, border-color 0.1s;
+}
+
+.btn:hover {
+  background: var(--bg);
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.btn-primary:hover {
+  background: #5558e3;
+}
+
+.btn-icon {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+}
+
+.btn-ghost {
+  background: transparent;
+  border: none;
+}
+
+.btn-ghost:hover {
+  background: var(--bg);
+}
+
+.input {
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 13px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  outline: none;
+}
+
+.input:focus {
+  border-color: var(--primary);
+}
+
+/* Cards */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
