@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { BrainCircuit, Eye, Heart, Sun, Moon } from 'lucide-react';
+import { BrainCircuit, Eye, Globe, Sun, Moon } from 'lucide-react';
 import { INITIAL_DEVICES, INITIAL_NODES, MOCK_CONTEXT, TrafficLight, DeviceSelector, LiveStatusCard } from './components/core';
 import { ChatWidget, MapWidget, ProjectCard } from './components/widgets';
 import { MindMapCanvas, AdminSidebar } from './components/admin';
@@ -101,7 +101,7 @@ export default function App() {
 }
 
 function AppContent() {
-  const [viewMode, setViewMode] = useState('partner');
+  const [viewMode, setViewMode] = useState('public');
   const [devices, setDevices] = useState(INITIAL_DEVICES);
   const [selectedDeviceId, setSelectedDeviceId] = useState('desktop-main');
   const [nodes, setNodes] = useState(INITIAL_NODES);
@@ -244,17 +244,17 @@ function AppContent() {
         <div className="header-brand"><div className="brand-icon"><BrainCircuit size={20} /></div><span className="brand-name">Glass Mind</span></div>
         <div className="header-tabs">
           <button className={`header-tab ${viewMode === 'admin' ? 'active' : ''}`} onClick={() => setViewMode('admin')}><Eye size={16} />My Brain</button>
-          <button className={`header-tab ${viewMode === 'partner' ? 'active' : ''}`} onClick={() => setViewMode('partner')}><Heart size={16} />Public View</button>
+          <button className={`header-tab ${viewMode === 'public' ? 'active' : ''}`} onClick={() => setViewMode('public')}><Globe size={16} />Public View</button>
         </div>
-        <button className="dark-toggle" onClick={() => setDarkMode(!darkMode)} title={darkMode ? 'Light mode' : 'Dark mode'}>
+        <button className="dark-toggle" onClick={() => setDarkMode(!darkMode)} aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'} title={darkMode ? 'Light mode' : 'Dark mode'}>
           {darkMode ? <Sun size={18} /> : <Moon size={18} />}
         </button>
       </header>
       <main className="app-main">
         <AnimatePresence mode="wait">
-          {viewMode === 'partner' ? (
-            <motion.div key="partner" className="partner-view" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-              <div className="partner-content">
+          {viewMode === 'public' ? (
+            <motion.div key="public" className="public-view" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              <div className="public-content">
                 <TrafficLight windowCount={selectedDevice.windowCount} online={selectedDevice.online} />
                 <DeviceSelector devices={processedDevices} selectedId={selectedDeviceId} onSelect={setSelectedDeviceId} />
                 <LiveStatusCard device={selectedDevice} context={currentContext} />

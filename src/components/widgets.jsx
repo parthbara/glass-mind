@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-import { Send, Bot, Heart, Minimize2, Sparkles, MapPin, CheckCircle2, Circle, PauseCircle, Battery, BatteryCharging, Wifi, Signal } from 'lucide-react';
-import { formatTime } from './core';
+import { Send, MessageSquare, Minimize2, Sparkles, MapPin, CheckCircle2, Circle, PauseCircle, Battery } from 'lucide-react';
+import { formatTime } from './helpers';
 import { GEMINI_API_KEY } from '../config';
 
 // Chat Widget - Two separate chats: AI assistant and direct messages
-export const ChatWidget = ({ device, context, nodes, dmMessages, onSendMessage }) => {
-    const [openChat, setOpenChat] = useState(null); // null, 'ai', or 'hubby'
+export const ChatWidget = ({ device, context, dmMessages, onSendMessage }) => {
+    const [openChat, setOpenChat] = useState(null); // null, 'ai', or 'dm'
     const [input, setInput] = useState('');
-    const [messages, setMessages] = useState([{ sender: 'ai', text: "Hello! I am the Glass Mind Butler. I can update you on his status, or help YOU with anything you need. How may I be of service?" }]);
+    const [messages, setMessages] = useState([{ sender: 'ai', text: "Hello -- I am the Glass Mind assistant. I can tell you what is currently being worked on, or help you with anything else you need." }]);
     const [isTyping, setIsTyping] = useState(false);
     const [lastSeenCount, setLastSeenCount] = useState(0);
 
@@ -24,15 +24,15 @@ export const ChatWidget = ({ device, context, nodes, dmMessages, onSendMessage }
         if (apiKey) {
             try {
                 const systemPrompt = `
-You are "Alfred", the Glass Mind Butler.
-Your master (the one being monitored) is currently:
+You are the Glass Mind assistant.
+The person this dashboard tracks is currently:
 - Activity: ${device?.status || 'Active'}
 - Working on: ${device?.activeWindow || 'Unknown Task'}
 - Current Context: ${context || 'No specific context provided'}
 
 Your Role:
 - You are a polite, warm, and helpful assistant for whoever is viewing this dashboard.
-- You can answer questions about the master's current status based on the info above.
+- You can answer questions about their current status based on the info above.
 - You are also a general-purpose assistant: happy to help with ideas, drafts, quick lookups, or casual questions.
 - Always be courteous, supportive, and slightly formal but warm.
 - Keep answers concise (under 80 words) unless asked for more.
@@ -86,11 +86,11 @@ Your Role:
         }
     };
 
-    const openHubbyChat = () => {
-        setOpenChat('hubby');
+    const openDmChat = () => {
+        setOpenChat('dm');
         // Mark all as read when opening
-        const hubbyMsgCount = dmMessages ? dmMessages.filter(m => m.sender === 'me').length : 0;
-        setLastSeenCount(hubbyMsgCount);
+        const dmMsgCount = dmMessages ? dmMessages.filter(m => m.sender === 'me').length : 0;
+        setLastSeenCount(dmMsgCount);
     };
 
     // Show FABs when closed
@@ -99,8 +99,8 @@ Your Role:
             <motion.button className="chat-fab ai-fab" onClick={() => setOpenChat('ai')} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Sparkles size={20} /><span>AI Assistant</span>
             </motion.button>
-            <motion.button className="chat-fab hubby-fab" onClick={openHubbyChat} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Heart size={20} /><span>Messages</span>
+            <motion.button className="chat-fab dm-fab" onClick={openDmChat} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <MessageSquare size={20} /><span>Messages</span>
                 {hasUnread && <span className="notif-dot" />}
             </motion.button>
         </div>
@@ -110,9 +110,9 @@ Your Role:
         <motion.div className="chat-widget" initial={{ opacity: 0, y: 50, scale: 0.9 }} animate={{ opacity: 1, y: 0, scale: 1 }}>
             <div className="chat-header">
                 <div className="chat-title">
-                    {openChat === 'ai' ? <><Sparkles size={16} /> AI Assistant</> : <><Heart size={16} /> Messages</>}
+                    {openChat === 'ai' ? <><Sparkles size={16} /> AI Assistant</> : <><MessageSquare size={16} /> Messages</>}
                 </div>
-                <button className="btn btn-ghost btn-icon" onClick={() => setOpenChat(null)}><Minimize2 size={18} /></button>
+                <button className="btn btn-ghost btn-icon" aria-label="Close chat" onClick={() => setOpenChat(null)}><Minimize2 size={18} /></button>
             </div>
             <div className="chat-messages">
                 {openChat === 'ai' ? (<>
@@ -122,7 +122,7 @@ Your Role:
                     </motion.div>)}
                     {isTyping && <div className="chat-message ai"><div className="typing-indicator"><span></span><span></span><span></span></div></div>}
                 </>) : (<>
-                    {(!dmMessages || dmMessages.length === 0) && <div className="dm-empty">No messages yet. Send him a love note! 💕</div>}
+                    {(!dmMessages || dmMessages.length === 0) && <div className="dm-empty">No messages yet.</div>}
                     {dmMessages && dmMessages.map((m, i) => (
                         <motion.div
                             key={i}
@@ -137,8 +137,8 @@ Your Role:
                 </>)}
             </div>
             <div className="chat-input-wrap">
-                <input className="chat-input" value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSend()} placeholder={openChat === 'ai' ? 'Ask about his status...' : 'Send a message...'} />
-                <button className="btn btn-primary btn-icon" onClick={handleSend}><Send size={18} /></button>
+                <input className="chat-input" value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSend()} placeholder={openChat === 'ai' ? 'Ask about the current status...' : 'Send a message...'} />
+                <button className="btn btn-primary btn-icon" aria-label="Send message" onClick={handleSend}><Send size={18} /></button>
             </div>
         </motion.div>
     );

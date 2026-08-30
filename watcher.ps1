@@ -1,7 +1,8 @@
 # Glass Mind - PC Watcher Script
 # Reports active window, CPU, RAM, and activity status to Firebase Realtime Database
 
-$FirebaseUrl = "https://glass-mind-d1aaa-default-rtdb.asia-southeast1.firebasedatabase.app/devices/desktop-main.json"
+# Set this to your own Realtime Database endpoint -- see FIREBASE_SETUP.md step 5.
+$FirebaseUrl = "https://YOUR-PROJECT-default-rtdb.YOUR-REGION.firebasedatabase.app/devices/desktop-main.json"
 $IntervalSeconds = 10
 
 # --- Helper: Get foreground window title ---

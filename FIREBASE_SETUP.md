@@ -13,8 +13,27 @@ Follow these steps to create your backend for syncing device data.
 1. In the left sidebar, click **Build** -> **Realtime Database**.
 2. Click **"Create Database"**.
 3. Choose a location (e.g., United States).
-4. **Security Rules**: Choose **"Start in test mode"** (this allows read/write access for 30 days, easier for initial setup).
-   * *Later we can lock this down, but for now, this makes the scripts work immediately.*
+4. **Security Rules**: Choose **"Start in locked mode"**.
+   * Do **not** use test mode. Test mode leaves the database world-readable and
+     world-writable for 30 days, and it fails open again once the window lapses --
+     anyone who learns the URL can read your device history and location, or write
+     to it. The URL is not a secret: it ships in the client bundle.
+   * Then set rules that suit how you run it. The simplest safe option, if you only
+     ever write from your own scripts and read from your own browser, is to require
+     Firebase Auth:
+
+     ```json
+     {
+       "rules": {
+         ".read": "auth != null",
+         ".write": "auth != null"
+       }
+     }
+     ```
+
+   * If you want the dashboard publicly readable but not writable, use
+     `".read": true` with `".write": "auth != null"` -- and be aware that this
+     publishes your device activity and coordinates to anyone with the URL.
 
 ### 3. Get Configuration Keys
 1. Click the **Project Settings** (gear icon ⚙️ next to "Project Overview" in the top left).
@@ -24,8 +43,13 @@ Follow these steps to create your backend for syncing device data.
 5. Copy the `firebaseConfig` object (apiKey, authDomain, etc.).
 
 ### 4. Connect to Code
-1. Open `src/firebase.js` in your editor.
-2. Paste the `firebaseConfig` values you just copied into the placeholder area.
+1. Copy `.env.example` to `.env` (it is gitignored -- never commit it).
+2. Fill in the `VITE_FIREBASE_*` values from the `firebaseConfig` object you just
+   copied, plus `VITE_GEMINI_API_KEY` if you want the AI chat.
+3. `src/firebase.js` reads these at build time. Leave the file alone.
+
+> With no `VITE_FIREBASE_API_KEY` set, the app runs in demo mode against local
+> seed data and makes no network calls at all.
 
 ### 5. Get Database URL for Scripts
 1. Go back to **Realtime Database** in the console.

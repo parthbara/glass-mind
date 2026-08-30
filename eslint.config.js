@@ -23,7 +23,10 @@ export default defineConfig([
       },
     },
     rules: {
-      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+      // `motion` is only ever referenced as a JSX member expression (<motion.div />).
+      // Core no-unused-vars does not track that without eslint-plugin-react, so it
+      // is exempted here rather than deleting an import the app actually needs.
+      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]|^motion$' }],
     },
   },
 ])

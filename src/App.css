@@ -2,9 +2,12 @@
 
 /* App Layout */
 .app {
-  min-height: 100vh;
+  height: 100vh;
+  /* dvh keeps the layout correct while mobile browser chrome shows/hides */
+  height: 100dvh;
   display: flex;
   flex-direction: column;
+  overflow-x: hidden;
 }
 
 .app-header {
@@ -88,18 +91,18 @@
 
 .app-main {
   flex: 1;
-  height: calc(100vh - 57px);
+  min-height: 0;
   overflow: hidden;
 }
 
-/* Partner View */
-.partner-view {
+/* Public View */
+.public-view {
   height: 100%;
   overflow-y: auto;
   padding: 20px;
 }
 
-.partner-content {
+.public-content {
   max-width: 600px;
   margin: 0 auto;
   display: flex;
@@ -270,6 +273,35 @@
   font-size: 12px;
   color: var(--text-muted);
   margin: 0;
+}
+
+/* Metric row under the device name (CPU / RAM / battery / last seen).
+   These classes existed in the markup but had no rules, so the badges ran
+   together with no spacing. */
+.live-status-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.meta-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px;
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--text-muted);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.meta-badge .low {
+  color: var(--danger);
 }
 
 .live-status-details {
@@ -512,9 +544,9 @@
   box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
 }
 
-.chat-fab.hubby-fab {
-  background: linear-gradient(135deg, #ec4899, #f472b6);
-  box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
+.chat-fab.dm-fab {
+  background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
 }
 
 .notif-dot {
@@ -1320,12 +1352,65 @@
 
 /* Responsive */
 @media (max-width: 768px) {
+  body {
+    overflow-x: hidden;
+  }
+
+  .app-header {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px 12px;
+  }
+
+  .header-tabs {
+    order: 3;
+    width: 100%;
+  }
+
+  .header-tab {
+    flex: 1;
+    justify-content: center;
+    padding: 8px 10px;
+  }
+
+  /* Admin view stacks instead of sitting side by side */
+  .admin-view {
+    flex-direction: column;
+  }
+
+  .mindmap-canvas {
+    flex: none;
+    height: 55vh;
+  }
+
   .admin-sidebar {
-    width: 240px;
+    width: 100%;
+    height: auto;
+    flex: 1;
+    min-height: 0;
+    border-left: none;
+    border-top: 1px solid var(--border);
   }
 
   .mindmap-node {
     width: 160px;
+  }
+
+  .public-view {
+    padding: 12px;
+  }
+
+  .chat-fabs {
+    right: 12px;
+    bottom: 12px;
+  }
+
+  .chat-widget {
+    width: auto;
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    height: min(70vh, 450px);
   }
 }
 
@@ -1400,7 +1485,7 @@
 }
 
 .login-input.error {
-  border-color: var(--error);
+  border-color: var(--danger);
   animation: shake 0.4s ease-in-out;
 }
 
@@ -1434,5 +1519,26 @@
 
   75% {
     transform: translateX(5px);
+  }
+}
+
+/* Respect the OS "reduce motion" setting.
+   framer-motion is JS-driven and is handled separately by <MotionConfig
+   reducedMotion="user"> in src/main.jsx -- this block covers the CSS side. */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .traffic-light-orb,
+  .notif-dot,
+  .typing-indicator span {
+    animation: none !important;
   }
 }
