@@ -1,5 +1,4 @@
 import React, { useState, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
     Plus, Trash2, CheckCircle2, PauseCircle, PlayCircle, Send, Heart,
     Bell, FileText, Target, Layers, Circle, BrainCircuit, Sparkles
@@ -255,13 +254,13 @@ const NodeCard = ({
                     {node.status === 'stopped' ? '⏸' : node.status === 'done' ? '✓' : ''} {node.type || 'node'}
                 </span>
                 <div className="node-actions">
-                    <button onClick={e => toggleStatus(e, node.id, 'done')} className={node.status === 'done' ? 'active' : ''}>
+                    <button onClick={e => toggleStatus(e, node.id, 'done')} aria-label="Mark node done" className={node.status === 'done' ? 'active' : ''}>
                         <CheckCircle2 size={13} />
                     </button>
-                    <button onClick={e => toggleStatus(e, node.id, 'pause')}>
+                    <button onClick={e => toggleStatus(e, node.id, 'pause')} aria-label={node.status === 'stopped' ? 'Resume node' : 'Pause node'}>
                         {node.status === 'stopped' ? <PlayCircle size={13} /> : <PauseCircle size={13} />}
                     </button>
-                    <button onClick={e => deleteNode(e, node.id)} className="delete-btn">
+                    <button onClick={e => deleteNode(e, node.id)} aria-label="Delete node" className="delete-btn">
                         <Trash2 size={13} />
                     </button>
                 </div>
@@ -285,6 +284,7 @@ const NodeCard = ({
                     {nodeColors.map(color => (
                         <button
                             key={color.name}
+                            aria-label={`Set node colour: ${color.name}`}
                             className={`color-option ${node.color === color.name ? 'active' : ''}`}
                             style={{ background: color.bg }}
                             onClick={e => {
@@ -332,9 +332,9 @@ export const AdminChat = ({ messages, onSendMessage }) => {
                     value={input}
                     onChange={e => setInput(e.target.value)}
                     onKeyDown={e => e.key === 'Enter' && handleSend()}
-                    placeholder="Message her..."
+                    placeholder="Message..."
                 />
-                <button onClick={handleSend} disabled={!input.trim()}><Send size={18} /></button>
+                <button onClick={handleSend} disabled={!input.trim()} aria-label="Send message"><Send size={18} /></button>
             </div>
         </div>
     );
@@ -399,7 +399,7 @@ User Query: ${userText}
                 const data = await res.json();
                 const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "Error: No response from Gemini.";
                 setMessages(prev => [...prev, { sender: 'ai', text: reply }]);
-            } catch (e) {
+            } catch {
                 setMessages(prev => [...prev, { sender: 'ai', text: "Error connecting to Gemini. Check API Key." }]);
             }
         } else {
@@ -417,13 +417,13 @@ User Query: ${userText}
                 <h4 className="section-title" style={{ margin: 0 }}>
                     <Sparkles size={14} style={{ color: '#6366f1' }} /> Cortex Assistant
                 </h4>
-                <button onClick={() => setShowSettings(!showSettings)} style={{ background: 'none', border: 'none', cursor: 'pointer', opacity: 0.6 }}>
+                <button onClick={() => setShowSettings(!showSettings)} aria-label="Assistant settings" aria-expanded={showSettings} style={{ background: 'none', border: 'none', cursor: 'pointer', opacity: 0.6 }}>
                     <Layers size={14} />
                 </button>
             </div>
 
             {showSettings ? (
-                <div className="api-key-settings" style={{ marginBottom: '10px', padding: '10px', background: 'var(--bg-card)', borderRadius: '8px', border: '1px solid var(--border)' }}>
+                <div className="api-key-settings" style={{ marginBottom: '10px', padding: '10px', background: 'var(--surface)', borderRadius: '8px', border: '1px solid var(--border)' }}>
                     <label style={{ display: 'block', fontSize: '11px', marginBottom: '4px', fontWeight: 500 }}>Gemini API Key</label>
                     <input
                         type="password"
@@ -457,7 +457,7 @@ User Query: ${userText}
                         onKeyDown={e => e.key === 'Enter' && handleSend()}
                         placeholder="Ask me anything..."
                     />
-                    <button onClick={handleSend} disabled={!input.trim()} style={{ background: 'var(--text)' }}>
+                    <button onClick={handleSend} disabled={!input.trim()} aria-label="Send to assistant" style={{ background: 'var(--text)' }}>
                         <Send size={18} />
                     </button>
                 </div>
@@ -608,6 +608,7 @@ export const NodeManagement = ({ nodes, setNodes, activeId, setActiveId }) => {
                             {nodeColors.map(color => (
                                 <button
                                     key={color.name}
+                                    aria-label={`Set colour: ${color.label}`}
                                     className={`color-btn ${selectedNode.color === color.name ? 'active' : ''}`}
                                     style={{ background: color.bg }}
                                     onClick={() => updateNode('color', color.name)}
@@ -651,7 +652,7 @@ export const NodeManagement = ({ nodes, setNodes, activeId, setActiveId }) => {
                             placeholder={`New ${newType}...`}
                             onKeyDown={e => e.key === 'Enter' && handleAdd()}
                         />
-                        <button onClick={handleAdd} disabled={!newLabel.trim()}>
+                        <button onClick={handleAdd} disabled={!newLabel.trim()} aria-label="Add node">
                             <Plus size={18} />
                         </button>
                     </div>

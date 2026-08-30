@@ -17,6 +17,7 @@
   --text-muted: #64748b;
   --primary: #6366f1;
   --primary-light: #e0e7ff;
+  --primary-dark: #4f46e5;
   --success: #10b981;
   --warning: #f59e0b;
   --danger: #f43f5e;
@@ -32,6 +33,7 @@ body.dark {
   --text-muted: #94a3b8;
   --primary: #818cf8;
   --primary-light: #312e81;
+  --primary-dark: #6366f1;
 }
 
 /* Dark mode specific overrides for nodes */

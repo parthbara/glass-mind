@@ -23,4 +23,12 @@ See `FIREBASE_SETUP.md` for creating a Firebase project and `DEVICE_SETUP.md` fo
 
 ## Status
 
-Personal project, actively used day-to-day. The public repo has all personal data, device coordinates, and API keys stripped -- see `.env.example` for what you need to supply to run your own instance.
+Personal project, actively used day-to-day.
+
+This public repo carries no secrets and no live endpoints:
+
+- API keys are read from a gitignored `.env` (see `.env.example`); nothing is hardcoded.
+- `watcher.ps1`, `launcher.ps1`, and `public/tracker.html` ship with `YOUR-PROJECT` placeholder URLs you must fill in yourself.
+- The seed data in `src/components/core.jsx` is generic -- example projects and a public landmark coordinate, no real personal details.
+
+With no Firebase environment variables set, the app runs in `DEMO_MODE`: fully client-side, no network calls, nothing persisted.
