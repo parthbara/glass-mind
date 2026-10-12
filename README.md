@@ -32,3 +32,7 @@ This public repo carries no secrets and no live endpoints:
 - The seed data in `src/components/core.jsx` is generic -- example projects and a public landmark coordinate, no real personal details.
 
 With no Firebase environment variables set, the app runs in `DEMO_MODE`: fully client-side, no network calls, nothing persisted.
+
+## License
+
+MIT, see [LICENSE](LICENSE).
